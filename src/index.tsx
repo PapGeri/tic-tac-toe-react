@@ -3,40 +3,56 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 interface SquareProps {
-    value: number;
+    value: string;
+    onClick: () => void;
 }
 
-interface SquareState {
-    value: string | null;
+interface BoardProps {
+
 }
 
-class Square extends React.Component<SquareProps, SquareState> {
-    constructor(props: SquareProps) {
+interface BoardState {
+    squares: string[],
+    xIsNext: boolean,
+}
+
+function Square(props: SquareProps) {
+    return (
+        <button
+            className="square"
+            onClick={props.onClick}
+        >
+            {props.value}
+        </button>
+    );
+}
+
+class Board extends React.Component<BoardProps, BoardState> {
+    constructor(props: BoardProps) {
         super(props);
         this.state = {
-            value: null,
-        };
+            squares: Array(9).fill(null),
+            xIsNext: true,
+        }
     }
 
-    render() {
-        return (
-            <button
-                className="square"
-                onClick={() => this.setState({value: 'X'})}
-            >
-                {this.state.value}
-            </button>
-        );
+    handleClick(index: number) {
+        const squares: string[] = this.state.squares.slice();
+        squares[index] = this.state.xIsNext ? 'X' : 'O';
+        this.setState({
+            squares: squares,
+            xIsNext: !this.state.xIsNext
+        });
     }
-}
 
-class Board extends React.Component {
     renderSquare(i: number) {
-        return <Square value={i}/>;
+        return <Square value={this.state.squares[i]}
+                       onClick={() => this.handleClick(i)}
+        />;
     }
 
     render() {
-        const status = 'Next player: X';
+        const status = this.state.xIsNext ? 'Next player: X' : 'Next player: O';
 
         return (
             <div>
